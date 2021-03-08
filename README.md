@@ -1,7 +1,11 @@
 # Social App Animation
 
-Sleek, simple and beautiful interactions does truly bring an app to life.
-This is my version of a social app design interactions i found on dribbble implemented in flutter.
+Sleek, simple and beautiful interactions do truly bring an app to life.
+This is my version of a social app design interaction i found on dribbble implemented in flutter.
+
+```
+For the things we have to learn before we can do them, we learn by doing them. @Aristotle
+```
 
 ![Social App](assets/social_app.gif)
 
@@ -24,4 +28,4 @@ If you face an issue or have any contributions, you can open an issue or reach o
 
 ### License
 
-MIT, see [LICENSE.md](https://github.com/AndyOsei/foodie_app/blob/master/LICENSE.md) for details.
+MIT, see [LICENSE.md](https://github.com/AndyOsei/social-app-animation/blob/main/LICENSE.md) for details.
