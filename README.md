@@ -7,7 +7,7 @@ This is my version of a social app design interaction i found on dribbble implem
 For the things we have to learn before we can do them, we learn by doing them. @Aristotle
 ```
 
-![Social App](https://www.dropbox.com/s/11d9natbv12upus/social_app_3.mp4?dl=0)
+![Social App](assets/social_app.gif)
 
 Find actual design at [iPhone X Social App](https://dribbble.com/shots/3898209-iPhone-X-Social-App).
 
