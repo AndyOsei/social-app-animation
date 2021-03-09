@@ -21,7 +21,7 @@ class _FollowButtonState extends State<FollowButton>
   void initState() {
     super.initState();
     _controller =
-        AnimationController(duration: Duration(milliseconds: 200), vsync: this);
+        AnimationController(duration: Duration(milliseconds: 350), vsync: this);
 
     _textOpacity = Tween<double>(begin: 1.0, end: 0.0).animate(
       CurvedAnimation(
@@ -33,7 +33,7 @@ class _FollowButtonState extends State<FollowButton>
     _width = Tween<double>(begin: 120.0, end: 40.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: Interval(0.010, 0.600, curve: Curves.easeIn),
+        curve: Interval(0.010, 0.500, curve: Curves.easeIn),
         reverseCurve: Curves.easeOut,
       ),
     );
@@ -41,7 +41,7 @@ class _FollowButtonState extends State<FollowButton>
     _iconOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: Interval(0.700, 1.000, curve: Curves.ease),
+        curve: Interval(0.800, 1.000, curve: Curves.ease),
       ),
     );
   }

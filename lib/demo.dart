@@ -1,5 +1,7 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/physics.dart';
+import 'package:interpolate/interpolate.dart';
 import 'package:social_app_animation/animated_info.dart';
 import 'package:social_app_animation/follow_button.dart';
 import 'package:social_app_animation/models.dart';
@@ -17,17 +19,19 @@ class _SocialAppDemoState extends State<SocialAppDemo>
   AnimationController _infoAnimationController;
   AnimationController _snapAnimationController;
   Animation<double> _snapAnimation;
+  ValueNotifier<double> _drag;
   List<Person> _people;
   int _currentPage = 0;
-  double _drag = 0.0;
   double _maxHeight = 500.0;
-  double _minHeight = 240.0;
+  double _minHeight = 220.0;
+  Interpolate _scaleInterpolate;
+  bool _show = false;
 
   @override
   void initState() {
     super.initState();
 
-    _drag = 240;
+    _drag = ValueNotifier<double>(_minHeight);
 
     _people = people();
 
@@ -53,8 +57,14 @@ class _SocialAppDemoState extends State<SocialAppDemo>
       duration: Duration(milliseconds: 750),
       vsync: this,
     )..addListener(() {
-        _drag = _snapAnimation.value;
+        _drag.value = _snapAnimation.value;
       });
+
+    _scaleInterpolate = Interpolate(
+      inputRange: [_minHeight, _maxHeight],
+      outputRange: [1.5, 1],
+      extrapolate: Extrapolate.clamp,
+    );
   }
 
   @override
@@ -68,6 +78,7 @@ class _SocialAppDemoState extends State<SocialAppDemo>
         children: [
           PageView.builder(
             controller: _pageController,
+            physics: ClampingScrollPhysics(),
             itemCount: _people.length,
             onPageChanged: (index) {
               setState(() {
@@ -75,17 +86,26 @@ class _SocialAppDemoState extends State<SocialAppDemo>
               });
             },
             itemBuilder: (context, index) {
-              return Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(_people[index].pic),
-                    fit: BoxFit.cover,
-                    colorFilter: ColorFilter.mode(
-                      Colors.black.withOpacity(0.2),
-                      BlendMode.darken,
+              return AnimatedBuilder(
+                animation: _drag,
+                builder: (BuildContext context, Widget child) {
+                  return Transform.scale(
+                    alignment: Alignment.center,
+                    scale: _scaleInterpolate.eval(_drag.value),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(_people[index].pic),
+                          fit: BoxFit.cover,
+                          colorFilter: ColorFilter.mode(
+                            Colors.black.withOpacity(0.25),
+                            BlendMode.darken,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                },
               );
             },
           ),
@@ -141,8 +161,9 @@ class _SocialAppDemoState extends State<SocialAppDemo>
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 30.0),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Spacer(flex: 1),
+          SizedBox(height: 30),
           Container(
             child: AnimatedInfo(
               animation: _infoAnimationController,
@@ -174,7 +195,48 @@ class _SocialAppDemoState extends State<SocialAppDemo>
               ),
             ),
           ),
-          Spacer(flex: 3),
+          if (_show) SizedBox(height: 30),
+          if (_show)
+            Text(
+              '${_people[_currentPage].work}',
+              style: TextStyle(
+                fontSize: 14,
+              ),
+            ),
+          if (_show) SizedBox(height: 40),
+          if (_show)
+            Text(
+              'Photos',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          if (_show) SizedBox(height: 10),
+          if (_show)
+            Container(
+              height: 120,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: 5,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, index) {
+                  return Container(
+                    width: 100,
+                    height: 50,
+                    margin: EdgeInsets.symmetric(
+                        horizontal: (index == 0) ? 0.0 : 12.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      image: DecorationImage(
+                        image: AssetImage('assets/${index + 1}.jpeg'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            )
         ],
       ),
     );
@@ -190,7 +252,7 @@ class _SocialAppDemoState extends State<SocialAppDemo>
         child: _buildDraggableContentChild(),
         builder: (context, child) {
           return Container(
-            height: _drag,
+            height: _drag.value,
             width: double.infinity,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(40),
@@ -204,12 +266,22 @@ class _SocialAppDemoState extends State<SocialAppDemo>
   }
 
   void _onPanUpdate(details) {
-    final newHeight = _drag - details.delta.dy;
+    final newHeight = _drag.value - details.delta.dy;
+    final thresholdHeight = _maxHeight * 0.7;
+    if (newHeight > thresholdHeight) {
+      setState(() {
+        _show = true;
+      });
+    } else {
+      setState(() {
+        _show = false;
+      });
+    }
     if (newHeight > _maxHeight || newHeight < _minHeight) {
       return;
     }
     setState(() {
-      _drag -= details.delta.dy;
+      _drag.value -= details.delta.dy;
     });
   }
 
@@ -218,9 +290,10 @@ class _SocialAppDemoState extends State<SocialAppDemo>
   }
 
   void _onPanEnd(DragEndDetails details) {
-    final end = _drag > (_maxHeight * 0.7) ? _maxHeight : _minHeight;
+    final snapEnd = _drag.value > (_maxHeight * 0.7) ? _maxHeight : _minHeight;
+
     _snapAnimation = _snapAnimationController.drive(
-      Tween<double>(begin: _drag, end: end).chain(
+      Tween<double>(begin: _drag.value, end: snapEnd).chain(
         CurveTween(
           curve: Curves.easeOutExpo,
         ),
@@ -336,6 +409,8 @@ class _SocialAppDemoState extends State<SocialAppDemo>
   void dispose() {
     _pageController.dispose();
     _infoAnimationController.dispose();
+    _snapAnimationController.dispose();
+    _drag.dispose();
     super.dispose();
   }
 }

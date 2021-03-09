@@ -2,6 +2,7 @@ class Person {
   final String name;
   final String from;
   final String pic;
+  final String work;
   final String numOfFollowers;
   final String numOfPosts;
   final String numOfFollowing;
@@ -10,6 +11,7 @@ class Person {
     this.name,
     this.from,
     this.pic,
+    this.work,
     this.numOfFollowers,
     this.numOfPosts,
     this.numOfFollowing,
@@ -21,7 +23,8 @@ List<Person> people() {
     Person(
       name: 'Christine Wallace',
       from: 'France, Perpignan',
-      pic: 'assets/caique-silva.jpg',
+      pic: 'assets/1.jpeg',
+      work: "Photoreporter at 'Le Monde', blogger and freelance journalist",
       numOfFollowers: '2.8k',
       numOfPosts: '346',
       numOfFollowing: '845',
@@ -29,7 +32,8 @@ List<Person> people() {
     Person(
       name: 'Loren Turner',
       from: 'France, Villeurbanne',
-      pic: 'assets/caique-silva.jpg',
+      pic: 'assets/2.jpeg',
+      work: "Photoreporter at 'Le Monde', blogger and freelance journalist",
       numOfFollowers: '1.5k',
       numOfPosts: '86',
       numOfFollowing: '352',
@@ -37,7 +41,8 @@ List<Person> people() {
     Person(
       name: 'Lori Perez',
       from: 'France, Nantes',
-      pic: 'assets/caique-silva.jpg',
+      pic: 'assets/3.jpeg',
+      work: "Photoreporter at 'Le Monde', blogger and freelance journalist",
       numOfFollowers: '869',
       numOfPosts: '135',
       numOfFollowing: '485',
